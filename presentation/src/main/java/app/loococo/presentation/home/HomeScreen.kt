@@ -1,8 +1,8 @@
 package app.loococo.presentation.home
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,8 +14,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,7 +42,6 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.TemporalAdjusters
 
-
 @Composable
 internal fun HomeRoute() {
     HomeScreen()
@@ -47,115 +49,95 @@ internal fun HomeRoute() {
 
 @Composable
 fun HomeScreen() {
-    val vm: HomeViewModel = hiltViewModel()
-    val currentMonth: LocalDate by vm.currentMonth.collectAsStateWithLifecycle()
-    val calendarType: CalendarType by vm.calendarType.collectAsStateWithLifecycle()
+    val viewModel: HomeViewModel = hiltViewModel()
+    val currentDayState by viewModel.currentDay.collectAsStateWithLifecycle()
+    val calendarTypeState by viewModel.calendarType.collectAsStateWithLifecycle()
+    val selectedDateState by viewModel.selectedDate.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(20.dp)
     ) {
-        CalendarScreen(
-            currentMonth,
-            calendarType,
-            vm::onCalendarNavigation,
-            vm::onCalendarTypeChange
+        CalendarSection(
+            currentDay = currentDayState,
+            calendarType = calendarTypeState,
+            onCalendarNavigation = viewModel::onCalendarNavigation,
+            onCalendarTypeChange = viewModel::onCalendarTypeChange
         )
         Spacer(modifier = Modifier.height(5.dp))
-        DayScreen(currentMonth, calendarType)
+        DaySection(
+            currentDay = currentDayState,
+            calendarType = calendarTypeState,
+            selectedDate = selectedDateState,
+            onDateSelected = viewModel::updateSelectedDate
+        )
     }
 }
 
 @Composable
-fun CalendarScreen(
-    currentMonth: LocalDate,
+private fun CalendarSection(
+    currentDay: LocalDate,
     calendarType: CalendarType,
-    onCalendarNavigation: (navigation: CalendarNavigation) -> Unit,
+    onCalendarNavigation: (CalendarNavigation) -> Unit,
     onCalendarTypeChange: () -> Unit
 ) {
-    Log.e("do_it_log", "$currentMonth")
-
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        CalendarHeaderDate(currentMonth)
-        CalendarHeaderMonth(calendarType, onCalendarNavigation, onCalendarTypeChange)
+        CalendarHeaderDate(currentDay)
+        CalendarHeaderControls(calendarType, onCalendarNavigation, onCalendarTypeChange)
     }
 }
 
 @Composable
-fun DayScreen(
-    currentMonth: LocalDate,
-    calendarType: CalendarType
-) {
-    DaysOfWeekdays()
-    Spacer(modifier = Modifier.height(3.dp))
-    when (calendarType) {
-        CalendarType.DayOfWeek -> DaysOfWeek(currentMonth)
-        CalendarType.DayOfMonth -> DaysOfMonth(currentMonth)
-    }
-}
-
-@Composable
-fun CalendarHeaderDate(currentMonth: LocalDate) {
+private fun CalendarHeaderDate(currentDay: LocalDate) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
-            text = "${currentMonth.year}-${currentMonth.monthValue.toString().padStart(2, '0')}",
+            text = "${currentDay.year}-${currentDay.monthValue.toString().padStart(2, '0')}",
             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
         )
         Spacer(modifier = Modifier.width(7.dp))
-
-        Box(
+        Icon(
+            imageVector = DoItIcons.Check,
+            contentDescription = "Check",
             modifier = Modifier
                 .size(13.dp)
-                .background(Color.LightGray, shape = RoundedCornerShape(4.dp)),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = DoItIcons.Check,
-                contentDescription = "check"
-            )
-        }
-
-        Spacer(modifier = Modifier.width(3.dp))
-
-        Text(
-            text = "0",
-            style = MaterialTheme.typography.titleSmall
+                .background(Color.LightGray, shape = RoundedCornerShape(4.dp))
         )
+        Spacer(modifier = Modifier.width(3.dp))
+        Text(text = "0", style = MaterialTheme.typography.titleSmall)
     }
 }
 
 @Composable
-fun CalendarHeaderMonth(
+private fun CalendarHeaderControls(
     calendarType: CalendarType,
-    onCalendarNavigation: (navigation: CalendarNavigation) -> Unit,
+    onCalendarNavigation: (CalendarNavigation) -> Unit,
     onCalendarTypeChange: () -> Unit
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        IconButton(onClick = { onCalendarNavigation.invoke(CalendarNavigation.NavigateToPreviousPeriod) }) {
-            Icon(DoItIcons.ArrowLeft, contentDescription = "left")
+        IconButton(onClick = { onCalendarNavigation(CalendarNavigation.NavigateToPreviousPeriod) }) {
+            Icon(DoItIcons.ArrowLeft, contentDescription = "Previous period")
         }
-        IconButton(onClick = { onCalendarNavigation.invoke(CalendarNavigation.NavigateToNextPeriod) }) {
-            Icon(DoItIcons.ArrowRight, contentDescription = "right")
+        IconButton(onClick = { onCalendarNavigation(CalendarNavigation.NavigateToNextPeriod) }) {
+            Icon(DoItIcons.ArrowRight, contentDescription = "Next period")
         }
-
         Box(
             modifier = Modifier
-                .background(Color.LightGray, shape = RoundedCornerShape(10.dp))
-                .padding(10.dp, 2.dp)
-                .clickable { onCalendarTypeChange.invoke() },
+                .clickable { onCalendarTypeChange() }
+                .background(Color.LightGray, RoundedCornerShape(10.dp))
+                .padding(horizontal = 8.dp, vertical = 2.dp)
+                .wrapContentWidth(),
             contentAlignment = Alignment.Center
         ) {
-            val text = when(calendarType) {
-                CalendarType.DayOfMonth -> "월"
-                CalendarType.DayOfWeek -> "주"
-            }
             Text(
-                text = text,
+                text = when (calendarType) {
+                    CalendarType.DayOfMonth -> "월"
+                    CalendarType.DayOfWeek -> "주"
+                },
                 style = MaterialTheme.typography.titleSmall
             )
         }
@@ -163,14 +145,47 @@ fun CalendarHeaderMonth(
 }
 
 @Composable
-fun DaysOfWeekdays() {
-    val daysOfWeek = DateFormatSymbols().shortWeekdays
+private fun DaySection(
+    currentDay: LocalDate,
+    calendarType: CalendarType,
+    selectedDate: LocalDate,
+    onDateSelected: (LocalDate) -> Unit
+) {
+    DayScreen(
+        currentDay = currentDay,
+        calendarType = calendarType,
+        selectedDate = selectedDate,
+        onDateSelected = onDateSelected
+    )
+}
+
+@Composable
+private fun DayScreen(
+    currentDay: LocalDate,
+    calendarType: CalendarType,
+    selectedDate: LocalDate,
+    onDateSelected: (LocalDate) -> Unit
+) {
+    val today = LocalDate.now()
+
+    DaysOfWeekHeader()
+    Spacer(modifier = Modifier.height(3.dp))
+
+    when (calendarType) {
+        CalendarType.DayOfWeek -> DaysOfWeek(currentDay, today, selectedDate, onDateSelected)
+        CalendarType.DayOfMonth -> DaysOfMonth(currentDay, today, selectedDate, onDateSelected)
+    }
+}
+
+@Composable
+private fun DaysOfWeekHeader() {
+    val daysOfWeek = DateFormatSymbols().shortWeekdays.drop(1)
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        daysOfWeek.drop(1).forEach { day ->
+        daysOfWeek.forEach { day ->
             Text(
                 text = day,
                 modifier = Modifier.weight(1f),
@@ -182,16 +197,16 @@ fun DaysOfWeekdays() {
 }
 
 @Composable
-fun DaysOfWeek(currentMonth: LocalDate) {
-    val startOfWeek = currentMonth.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
-    val endOfWeek = currentMonth.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY))
-    val weekDates = mutableListOf<Int>()
-    var date = startOfWeek
-
-    while (date.isBefore(endOfWeek) || date == endOfWeek) {
-        weekDates.add(date.dayOfMonth)
-        date = date.plusDays(1)
-    }
+private fun DaysOfWeek(
+    currentDay: LocalDate,
+    today: LocalDate,
+    selectedDate: LocalDate,
+    onDateSelected: (LocalDate) -> Unit
+) {
+    val startOfWeek = currentDay.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
+    val weekDates = generateSequence(startOfWeek) { it.plusDays(1) }
+        .takeWhile { it.dayOfWeek != DayOfWeek.SUNDAY || it == startOfWeek }
+        .toList()
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -203,35 +218,32 @@ fun DaysOfWeek(currentMonth: LocalDate) {
                 modifier = Modifier.weight(1f),
                 contentAlignment = Alignment.Center
             ) {
-                DaysOfMonthItem(day)
+                DaysOfMonthItem(day, today, selectedDate, onDateSelected)
             }
         }
     }
 }
 
 @Composable
-fun DaysOfMonth(currentMonth: LocalDate) {
-
-    val firstDayOfWeek = currentMonth.withDayOfMonth(1).dayOfWeek.value % 7
-    val daysInMonth = currentMonth.lengthOfMonth()
-    val daysList = (1..daysInMonth).toList()
-
-    val lastDayOfPreviousMonth =
-        currentMonth.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth()).dayOfMonth
-
-    val daysInPreviousMonth =
-        (lastDayOfPreviousMonth - firstDayOfWeek + 1)..lastDayOfPreviousMonth
-    val daysListWithPreviousMonth = daysInPreviousMonth.toList()
-
-    val lastDayOfNextMonth = 7 - (daysList.size + daysListWithPreviousMonth.size) % 7
-    val daysInNextMonth = 1..lastDayOfNextMonth
-    val daysListWithNextMonth = daysInNextMonth.toList()
-
-    val totalDays = daysListWithPreviousMonth + daysList + daysListWithNextMonth
+private fun DaysOfMonth(
+    currentDay: LocalDate,
+    today: LocalDate,
+    selectedDate: LocalDate,
+    onDateSelected: (LocalDate) -> Unit
+) {
+    val firstDayOfMonth = currentDay.withDayOfMonth(1)
+    val daysInMonth = currentDay.lengthOfMonth()
+    val daysInPreviousMonth = firstDayOfMonth.dayOfWeek.value % 7
+    val lastDayOfPreviousMonth = firstDayOfMonth.minusDays(1).dayOfMonth
+    val totalDays = buildList {
+        addAll((lastDayOfPreviousMonth - daysInPreviousMonth + 1..lastDayOfPreviousMonth).toList())
+        addAll((1..daysInMonth).toList())
+        addAll((1..(7 - (daysInPreviousMonth + daysInMonth) % 7)).toList())
+    }
 
     LazyVerticalGrid(
-        modifier = Modifier.fillMaxWidth(),
-        columns = GridCells.Fixed(7)
+        columns = GridCells.Fixed(7),
+        modifier = Modifier.fillMaxWidth()
     ) {
         items(totalDays.size) { index ->
             Row(
@@ -240,7 +252,7 @@ fun DaysOfMonth(currentMonth: LocalDate) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 val day = totalDays[index]
-                if (index < daysListWithPreviousMonth.size || index >= daysListWithPreviousMonth.size + daysList.size) {
+                if (index < daysInPreviousMonth || index >= daysInPreviousMonth + daysInMonth) {
                     Box(
                         modifier = Modifier
                             .aspectRatio(1f)
@@ -248,8 +260,8 @@ fun DaysOfMonth(currentMonth: LocalDate) {
                             .background(Color.Transparent)
                     )
                 } else {
-                    val date = LocalDate.of(currentMonth.year, currentMonth.monthValue, day)
-                    DaysOfMonthItem(date.dayOfMonth)
+                    val date = LocalDate.of(currentDay.year, currentDay.monthValue, day)
+                    DaysOfMonthItem(date, today, selectedDate, onDateSelected)
                 }
             }
         }
@@ -257,31 +269,46 @@ fun DaysOfMonth(currentMonth: LocalDate) {
 }
 
 @Composable
-fun DaysOfMonthItem(day: Int) {
-    Column {
+private fun DaysOfMonthItem(
+    date: LocalDate,
+    today: LocalDate,
+    selectedDate: LocalDate,
+    onDateSelected: (LocalDate) -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+
+    val isToday = date == today
+    val isSelected = date == selectedDate
+
+    Column(
+        modifier = Modifier.clickable(
+            interactionSource = interactionSource,
+            indication = null,
+            onClick = { onDateSelected.invoke(date) },
+        ),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Box(
             modifier = Modifier
                 .size(20.dp)
-                .background(Color.LightGray, shape = RoundedCornerShape(5.dp)),
+                .background(Color.LightGray, shape = RoundedCornerShape(5.dp))
         )
-
         Spacer(modifier = Modifier.height(5.dp))
-
         Box(
             modifier = Modifier
-                .size(20.dp)
-//                .background(
-//                    color = if (day == currentDay) Color.LightGray else Color.Transparent,
-//                    shape = CircleShape
-//                )
-            ,
+                .size(22.dp)
+                .background(
+                    color = if (isSelected) Color.DarkGray else if (isToday) Color.LightGray else Color.Transparent,
+                    shape = CircleShape
+                ),
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "$day",
-                modifier = Modifier,
-//                style = MaterialTheme.typography.titleSmall.copy(fontWeight = if (day == currentDay) FontWeight.Bold else FontWeight.Normal),
-                style = MaterialTheme.typography.titleSmall,
+                text = "${date.dayOfMonth}",
+                style = MaterialTheme.typography.titleSmall.copy(
+                    fontWeight = if (isToday || isSelected) FontWeight.Bold else FontWeight.Normal
+                ),
+                color = if (isSelected) Color.White else Color.Black,
                 textAlign = TextAlign.Center
             )
         }
