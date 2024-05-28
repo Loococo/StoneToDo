@@ -37,4 +37,11 @@ object Version {
     object OKHTTP {
         const val OKHTTP3 = "com.squareup.okhttp3:logging-interceptor:4.12.0"
     }
+
+    object ROOM {
+        const val ROOM = "androidx.room:room-runtime:2.6.1"
+        const val ROOM_COMPILER = "androidx.room:room-compiler:2.6.1"
+        const val ROOM_KTX = "androidx.room:room-ktx:2.6.1"
+        const val ROOM_KTX_COMPILER = "android.arch.persistence.room:compiler:1.1.1"
+    }
 }

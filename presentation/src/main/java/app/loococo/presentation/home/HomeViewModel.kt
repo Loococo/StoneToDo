@@ -3,6 +3,7 @@ package app.loococo.presentation.home
 import androidx.lifecycle.ViewModel
 import app.loococo.domain.model.CalendarNavigation
 import app.loococo.domain.model.CalendarType
+import app.loococo.domain.usecase.PreferencesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,13 +13,15 @@ import java.time.temporal.TemporalAdjusters
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor() : ViewModel() {
+class HomeViewModel @Inject constructor(
+    private val preferencesUseCase: PreferencesUseCase
+) : ViewModel() {
 
     private val _currentDayFlow: MutableStateFlow<LocalDate> = MutableStateFlow(LocalDate.now())
     val currentDay: StateFlow<LocalDate> = _currentDayFlow
 
     private val _calendarTypeFlow: MutableStateFlow<CalendarType> =
-        MutableStateFlow(CalendarType.DayOfWeek)
+        MutableStateFlow(preferencesUseCase.getCalendarType())
     val calendarType: StateFlow<CalendarType> = _calendarTypeFlow
 
     private val _selectedDateFlow: MutableStateFlow<LocalDate> = MutableStateFlow(LocalDate.now())
@@ -53,7 +56,13 @@ class HomeViewModel @Inject constructor() : ViewModel() {
     fun onCalendarTypeChange() {
         _calendarTypeFlow.value = when (_calendarTypeFlow.value) {
             CalendarType.DayOfMonth -> {
-                updateSelectedDate(_currentDayFlow.value.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)))
+                updateSelectedDate(
+                    _currentDayFlow.value.with(
+                        TemporalAdjusters.previousOrSame(
+                            DayOfWeek.SUNDAY
+                        )
+                    )
+                )
                 CalendarType.DayOfWeek
             }
 
@@ -62,6 +71,7 @@ class HomeViewModel @Inject constructor() : ViewModel() {
                 CalendarType.DayOfMonth
             }
         }
+        preferencesUseCase.saveCalendarType(_calendarTypeFlow.value)
     }
 
     fun updateSelectedDate(date: LocalDate) {
