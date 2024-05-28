@@ -48,7 +48,9 @@ fun CalendarScreen(
     onCalendarTypeChange: () -> Unit,
     onDateSelected: (LocalDate) -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(20.dp)) {
         CalendarSection(
             currentDay,
             calendarType,
