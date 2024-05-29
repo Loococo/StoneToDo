@@ -1,5 +1,6 @@
 package app.loococo.presentation.home
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -211,6 +212,7 @@ private fun DaysOfWeek(
                 modifier = Modifier.weight(1f),
                 contentAlignment = Alignment.Center
             ) {
+                Log.e("---------------","$day")
                 DaysOfMonthItem(day, today, selectedDate, onDateSelected)
             }
         }
