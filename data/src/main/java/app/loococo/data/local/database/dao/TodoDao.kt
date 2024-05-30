@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import app.loococo.data.local.database.model.TodoEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TodoDao {
@@ -11,8 +12,8 @@ interface TodoDao {
     suspend fun insert(todoEntity: TodoEntity)
 
     @Query("SELECT * FROM todo WHERE date = :date")
-    suspend fun getItemsByDate(date: Long): List<TodoEntity>
+    fun getItemsByDate(date: String): Flow<List<TodoEntity>>
 
-    @Query("SELECT * FROM todo")
-    suspend fun getAll(): List<TodoEntity>
+    @Query("SELECT * FROM todo WHERE date BETWEEN :startDate AND :endDate")
+    fun getItemsBetweenDates(startDate: String, endDate: String): Flow<List<TodoEntity>>
 }

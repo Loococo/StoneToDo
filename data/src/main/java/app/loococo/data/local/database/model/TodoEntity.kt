@@ -3,6 +3,8 @@ package app.loococo.data.local.database.model
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import app.loococo.domain.model.Todo
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Entity(tableName = "todo")
 data class TodoEntity(
@@ -15,7 +17,7 @@ data class TodoEntity(
 
 fun TodoEntity.toTodo(): Todo {
     return Todo(
-        date = date,
+        date = date.toLocalDate(),
         description = description,
         completion = completion
     )
@@ -23,8 +25,16 @@ fun TodoEntity.toTodo(): Todo {
 
 fun Todo.toTodoEntity(): TodoEntity {
     return TodoEntity(
-        date = date,
+        date = date.toISO(),
         description = description,
         completion = completion
     )
+}
+
+fun LocalDate.toISO(): String {
+    return this.format(DateTimeFormatter.ISO_LOCAL_DATE)
+}
+
+fun String.toLocalDate(): LocalDate {
+    return LocalDate.parse(this, DateTimeFormatter.ISO_LOCAL_DATE)
 }

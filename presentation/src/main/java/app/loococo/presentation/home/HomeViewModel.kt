@@ -1,17 +1,20 @@
 package app.loococo.presentation.home
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.loococo.domain.model.CalendarNavigation
 import app.loococo.domain.model.CalendarType
 import app.loococo.domain.model.Todo
-import app.loococo.domain.model.toISO
 import app.loococo.domain.usecase.PreferencesUseCase
 import app.loococo.domain.usecase.TodoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -34,6 +37,45 @@ class HomeViewModel @Inject constructor(
     private val _selectedDateFlow: MutableStateFlow<LocalDate> = MutableStateFlow(LocalDate.now())
     val selectedDate: StateFlow<LocalDate> = _selectedDateFlow
 
+    private val _dateRangeFlow: MutableStateFlow<Pair<LocalDate, LocalDate>> =
+        MutableStateFlow(Pair(LocalDate.now(), LocalDate.now()))
+    val dateRange: StateFlow<Pair<LocalDate, LocalDate>> = _dateRangeFlow
+
+    val todoList: StateFlow<List<Todo>> = _selectedDateFlow
+        .flatMapLatest { selectedDate ->
+            todoUseCase.getTodoList(selectedDate)
+                .onStart { emit(emptyList()) }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = emptyList()
+        )
+
+    val todoListMap: StateFlow<Map<LocalDate, List<Todo>>> = _dateRangeFlow
+        .flatMapLatest { dateRange ->
+            todoUseCase.getTodoList(dateRange.first, dateRange.second)
+                .onStart { emit(emptyList()) }
+        }
+        .map { todos ->
+            todos.groupBy { it.date }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = emptyMap()
+        )
+
+
+//    val todoMap: StateFlow<Map<LocalDate, List<Todo>>> = todoList
+//        .map { todos ->
+//            todos.groupBy { it.date }
+//        }
+//        .stateIn(
+//            scope = viewModelScope,
+//            started = SharingStarted.WhileSubscribed(5_000),
+//            initialValue = emptyMap()
+//        )
 
     fun onCalendarNavigation(navigation: CalendarNavigation) {
         val currentDayValue = _currentDayFlow.value
@@ -87,12 +129,13 @@ class HomeViewModel @Inject constructor(
     }
 
     fun insert(description: String) {
-        _currentDayFlow.value
-        val todo = Todo(_selectedDateFlow.value.toISO(), description)
+        val todo = Todo(_selectedDateFlow.value, description)
         viewModelScope.launch {
             todoUseCase.insert(todo)
-
-            Log.e("----------","${todoUseCase.getAll()}")
         }
+    }
+
+    fun dateRange(startDate: LocalDate, endDate: LocalDate) {
+        _dateRangeFlow.value = Pair(startDate, endDate)
     }
 }

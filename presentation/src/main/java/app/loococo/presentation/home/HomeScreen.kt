@@ -48,6 +48,8 @@ fun HomeScreen() {
     val currentDayState by viewModel.currentDay.collectAsStateWithLifecycle()
     val calendarTypeState by viewModel.calendarType.collectAsStateWithLifecycle()
     val selectedDateState by viewModel.selectedDate.collectAsStateWithLifecycle()
+    val todoListState by viewModel.todoList.collectAsStateWithLifecycle()
+    val todoListMap by viewModel.todoListMap.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier
@@ -57,13 +59,15 @@ fun HomeScreen() {
             currentDay = currentDayState,
             calendarType = calendarTypeState,
             selectedDate = selectedDateState,
+            todoListMap = todoListMap,
             onCalendarNavigation = viewModel::onCalendarNavigation,
             onCalendarTypeChange = viewModel::onCalendarTypeChange,
-            onDateSelected = viewModel::updateSelectedDate
+            onDateSelected = viewModel::updateSelectedDate,
+            onDateRange = viewModel::dateRange,
         )
         Spacer(modifier = Modifier.height(5.dp))
         Box(modifier = Modifier.weight(1f)) {
-
+            TodoListScreen(todoListState)
         }
         AddToDo(onAddTodo = viewModel::insert)
     }

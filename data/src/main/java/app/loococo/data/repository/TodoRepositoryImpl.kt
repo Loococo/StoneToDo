@@ -1,10 +1,14 @@
 package app.loococo.data.repository
 
 import app.loococo.data.local.database.dao.TodoDao
+import app.loococo.data.local.database.model.toISO
 import app.loococo.data.local.database.model.toTodo
 import app.loococo.data.local.database.model.toTodoEntity
 import app.loococo.domain.model.Todo
 import app.loococo.domain.repository.TodoRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import java.time.LocalDate
 import javax.inject.Inject
 
 class TodoRepositoryImpl @Inject constructor(
@@ -14,11 +18,16 @@ class TodoRepositoryImpl @Inject constructor(
         todoDao.insert(todo.toTodoEntity())
     }
 
-    override suspend fun getTodoList(date: Long): List<Todo> {
-        return todoDao.getItemsByDate(date).map { it.toTodo() }
+    override fun getTodoList(date: LocalDate): Flow<List<Todo>> {
+        return todoDao.getItemsByDate(date.toISO()).map { databaseTodos ->
+            databaseTodos.map { it.toTodo() }
+        }
     }
 
-    override suspend fun getAll(): List<Todo> {
-        return todoDao.getAll().map { it.toTodo() }
+    override fun getTodoList(startDate: LocalDate, endDate: LocalDate): Flow<List<Todo>> {
+        return todoDao.getItemsBetweenDates(startDate.toISO(), endDate.toISO())
+            .map { databaseTodos ->
+                databaseTodos.map { it.toTodo() }
+            }
     }
 }

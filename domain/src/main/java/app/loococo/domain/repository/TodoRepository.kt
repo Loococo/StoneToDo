@@ -1,12 +1,14 @@
 package app.loococo.domain.repository
 
 import app.loococo.domain.model.Todo
+import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 
 interface TodoRepository {
 
     suspend fun insert(todo: Todo)
 
-    suspend fun getTodoList(date: Long): List<Todo>
+    fun getTodoList(date: LocalDate): Flow<List<Todo>>
 
-    suspend fun getAll(): List<Todo>
+    fun getTodoList(startDate: LocalDate, endDate: LocalDate): Flow<List<Todo>>
 }
