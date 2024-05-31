@@ -67,7 +67,10 @@ fun HomeScreen() {
         )
         Spacer(modifier = Modifier.height(5.dp))
         Box(modifier = Modifier.weight(1f)) {
-            TodoListScreen(todoListState)
+            TodoListScreen(
+                list = todoListState,
+                onCheckedChange = viewModel::changeTodoStatus
+            )
         }
         AddToDo(onAddTodo = viewModel::insert)
     }
@@ -75,7 +78,7 @@ fun HomeScreen() {
 
 @Composable
 fun AddToDo(onAddTodo: (String) -> Unit) {
-    var textState by remember { mutableStateOf(TextFieldValue("")) }
+    var textState by remember { mutableStateOf("") }
     val maxLines = 3
     val lineHeight = 22.dp
     val maxHeight = lineHeight * maxLines
@@ -107,7 +110,7 @@ fun AddToDo(onAddTodo: (String) -> Unit) {
                 ),
                 cursorBrush = SolidColor(Color.Black),
                 decorationBox = { innerTextField ->
-                    if (textState.text.isEmpty()) {
+                    if (textState.isEmpty()) {
                         Text(
                             text = "할 일을 적어주세요.",
                             style = TextStyle(
@@ -124,15 +127,19 @@ fun AddToDo(onAddTodo: (String) -> Unit) {
                 ),
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        if (textState.text.isNotBlank()) {
-                            onAddTodo.invoke(textState.text)
+                        if (textState.isNotBlank()) {
+                            onAddTodo.invoke(textState)
                         }
+                        textState = ""
                     }
                 )
             )
-            if (textState.text.isNotBlank()) {
+            if (textState.isNotBlank()) {
                 IconButton(
-                    onClick = { onAddTodo.invoke(textState.text) },
+                    onClick = {
+                        onAddTodo.invoke(textState)
+                        textState = ""
+                    },
                     modifier = Modifier.size(25.dp)
                 ) {
                     Icon(DoItIcons.Plus, contentDescription = "done")

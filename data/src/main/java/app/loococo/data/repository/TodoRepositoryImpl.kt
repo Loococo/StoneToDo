@@ -30,4 +30,8 @@ class TodoRepositoryImpl @Inject constructor(
                 databaseTodos.map { it.toTodo() }
             }
     }
+
+    override suspend fun changeTodoStatus(id: Int, status: Boolean) {
+        todoDao.changeTodoStatus(id, status)
+    }
 }

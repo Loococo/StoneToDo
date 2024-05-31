@@ -20,4 +20,8 @@ class TodoUseCase @Inject constructor(
     fun getTodoList(startDate: LocalDate, endDate: LocalDate): Flow<List<Todo>> {
         return todoRepository.getTodoList(startDate, endDate)
     }
+
+    suspend fun changeTodoStatus(id:Int, status:Boolean) {
+        todoRepository.changeTodoStatus(id, status)
+    }
 }

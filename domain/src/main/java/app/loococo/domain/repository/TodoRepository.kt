@@ -11,4 +11,6 @@ interface TodoRepository {
     fun getTodoList(date: LocalDate): Flow<List<Todo>>
 
     fun getTodoList(startDate: LocalDate, endDate: LocalDate): Flow<List<Todo>>
+
+    suspend fun changeTodoStatus(id:Int, status:Boolean)
 }

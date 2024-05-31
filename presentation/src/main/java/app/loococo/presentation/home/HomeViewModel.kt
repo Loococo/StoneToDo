@@ -66,17 +66,6 @@ class HomeViewModel @Inject constructor(
             initialValue = emptyMap()
         )
 
-
-//    val todoMap: StateFlow<Map<LocalDate, List<Todo>>> = todoList
-//        .map { todos ->
-//            todos.groupBy { it.date }
-//        }
-//        .stateIn(
-//            scope = viewModelScope,
-//            started = SharingStarted.WhileSubscribed(5_000),
-//            initialValue = emptyMap()
-//        )
-
     fun onCalendarNavigation(navigation: CalendarNavigation) {
         val currentDayValue = _currentDayFlow.value
         val updatedDay = when (_calendarTypeFlow.value) {
@@ -129,7 +118,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun insert(description: String) {
-        val todo = Todo(_selectedDateFlow.value, description)
+        val todo = Todo(date = _selectedDateFlow.value, description = description)
         viewModelScope.launch {
             todoUseCase.insert(todo)
         }
@@ -137,5 +126,11 @@ class HomeViewModel @Inject constructor(
 
     fun dateRange(startDate: LocalDate, endDate: LocalDate) {
         _dateRangeFlow.value = Pair(startDate, endDate)
+    }
+
+    fun changeTodoStatus(id: Int, status: Boolean) {
+        viewModelScope.launch {
+            todoUseCase.changeTodoStatus(id, status)
+        }
     }
 }

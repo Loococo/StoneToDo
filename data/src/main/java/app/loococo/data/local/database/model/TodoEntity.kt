@@ -11,15 +11,16 @@ data class TodoEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val date: String,
     val description: String,
-    val completion: Boolean = false
+    val status: Boolean = false
 )
 
 
 fun TodoEntity.toTodo(): Todo {
     return Todo(
+        id = id,
         date = date.toLocalDate(),
         description = description,
-        completion = completion
+        status = status
     )
 }
 
@@ -27,7 +28,7 @@ fun Todo.toTodoEntity(): TodoEntity {
     return TodoEntity(
         date = date.toISO(),
         description = description,
-        completion = completion
+        status = status
     )
 }
 

@@ -28,26 +28,28 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.unit.dp
 import app.loococo.domain.model.Todo
 import app.loococo.presentation.utils.DoItIcons
 
 @Composable
-fun TodoListScreen(list: List<Todo>) {
+fun TodoListScreen(
+    list: List<Todo>,
+    onCheckedChange: (Int, Boolean) -> Unit
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
     ) {
         items(list) { todo ->
-            TodoItem(todo)
+            TodoItem(todo, onCheckedChange)
         }
     }
 }
 
 @Composable
-fun TodoItem(item: Todo) {
-    var checked by remember { mutableStateOf(false) }
+fun TodoItem(item: Todo, onCheckedChange: (Int, Boolean) -> Unit) {
+    var checked by remember { mutableStateOf(item.status) }
 
     Column(
         modifier = Modifier.padding(20.dp, 0.dp),
@@ -56,7 +58,13 @@ fun TodoItem(item: Todo) {
         Row(
             verticalAlignment = Alignment.Top
         ) {
-            CustomCheckbox(checked = checked, onCheckedChange = { checked = it })
+            CustomCheckbox(
+                checked = checked,
+                onCheckedChange = {
+                    checked = it
+                    onCheckedChange(item.id, it)
+                }
+            )
             Spacer(modifier = Modifier.width(7.dp))
             Text(
                 text = item.description,

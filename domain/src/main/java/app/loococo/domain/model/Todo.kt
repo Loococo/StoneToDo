@@ -4,7 +4,8 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 data class Todo(
+    val id: Int = 0,
     val date: LocalDate,
     val description: String,
-    val completion: Boolean = false
+    val status: Boolean = false
 )

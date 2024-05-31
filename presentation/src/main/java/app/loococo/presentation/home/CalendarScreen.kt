@@ -8,12 +8,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -54,15 +52,10 @@ fun CalendarScreen(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(20.dp)
+            .padding(15.dp)
     ) {
-        CalendarSection(
-            currentDay,
-            calendarType,
-            onCalendarNavigation,
-            onCalendarTypeChange
-        )
-        Spacer(modifier = Modifier.height(5.dp))
+        CalendarHeader(currentDay, calendarType, onCalendarNavigation, onCalendarTypeChange)
+        Spacer(modifier = Modifier.height(10.dp))
         DaySection(
             currentDay,
             calendarType,
@@ -74,56 +67,35 @@ fun CalendarScreen(
     }
 }
 
-
 @Composable
-private fun CalendarSection(
+private fun CalendarHeader(
     currentDay: LocalDate,
     calendarType: CalendarType,
     onCalendarNavigation: (CalendarNavigation) -> Unit,
     onCalendarTypeChange: () -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        CalendarHeaderDate(currentDay)
-        CalendarHeaderControls(calendarType, onCalendarNavigation, onCalendarTypeChange)
-    }
-}
-
-@Composable
-private fun CalendarHeaderDate(currentDay: LocalDate) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(
-            text = "${currentDay.year}-${currentDay.monthValue.toString().padStart(2, '0')}",
-            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
-        )
-        Spacer(modifier = Modifier.width(7.dp))
-        Icon(
-            imageVector = DoItIcons.Check,
-            contentDescription = "Check",
-            modifier = Modifier
-                .size(13.dp)
-                .background(Color.LightGray, shape = RoundedCornerShape(4.dp))
-        )
-        Spacer(modifier = Modifier.width(3.dp))
-        Text(text = "0", style = MaterialTheme.typography.titleSmall)
-    }
-}
-
-@Composable
-private fun CalendarHeaderControls(
-    calendarType: CalendarType,
-    onCalendarNavigation: (CalendarNavigation) -> Unit,
-    onCalendarTypeChange: () -> Unit
-) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        IconButton(onClick = { onCalendarNavigation(CalendarNavigation.NavigateToPreviousPeriod) }) {
-            Icon(DoItIcons.ArrowLeft, contentDescription = "Previous period")
-        }
-        IconButton(onClick = { onCalendarNavigation(CalendarNavigation.NavigateToNextPeriod) }) {
-            Icon(DoItIcons.ArrowRight, contentDescription = "Next period")
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IconButton(
+                modifier = Modifier.size(20.dp),
+                onClick = { onCalendarNavigation(CalendarNavigation.NavigateToPreviousPeriod) }) {
+                Icon(DoItIcons.ArrowLeft, contentDescription = "Previous period")
+            }
+            Text(
+                text = "${currentDay.year}-${currentDay.monthValue.toString().padStart(2, '0')}",
+                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
+            )
+            IconButton(
+                modifier = Modifier.size(25.dp),
+                onClick = { onCalendarNavigation(CalendarNavigation.NavigateToNextPeriod) }) {
+                Icon(DoItIcons.ArrowRight, contentDescription = "Next period")
+            }
         }
         Box(
             modifier = Modifier
@@ -210,7 +182,9 @@ private fun DaysOfWeekHeader() {
             Text(
                 text = day,
                 modifier = Modifier.weight(1f),
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.titleSmall.copy(
+                    fontWeight = FontWeight.Bold
+                ),
                 textAlign = TextAlign.Center
             )
         }
@@ -282,12 +256,9 @@ private fun DaysOfMonth(
             ) {
                 val day = totalDays[index]
                 if (index < daysInPreviousMonth || index >= daysInPreviousMonth + daysInMonth) {
-                    Box(
-                        modifier = Modifier
-                            .aspectRatio(1f)
-                            .padding(4.dp)
-                            .background(Color.Transparent)
-                    )
+                    Spacer(modifier = Modifier
+                        .height(20.dp)
+                        .background(Color.Transparent))
                 } else {
                     val date = LocalDate.of(currentDay.year, currentDay.monthValue, day)
                     DaysOfMonthItem(date, today, selectedDate, todoListMap, onDateSelected)
