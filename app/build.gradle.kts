@@ -79,6 +79,11 @@ dependencies {
     implementation(Version.RETROFIT.RETROFIT_GSON)
     implementation(Version.OKHTTP.OKHTTP3)
 
+    implementation(Version.ROOM.ROOM)
+    kapt(Version.ROOM.ROOM_COMPILER)
+    implementation(Version.ROOM.ROOM_KTX)
+    kapt(Version.ROOM.ROOM_KTX_COMPILER)
+
     androidTestImplementation(Version.AndroidTest.TEST_RUNNER)
     androidTestImplementation(Version.AndroidTest.ESPRESSO_CORE)
     androidTestImplementation(platform(Version.COMPOSE.BOM))
