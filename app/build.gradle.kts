@@ -70,6 +70,8 @@ dependencies {
     implementation(Version.COMPOSE.NAVIGATION)
 
     implementation(Version.AndroidX.MATERIAL3)
+    implementation(Version.AndroidX.SPLASH)
+
     implementation(Version.HILT.HILT_ANDROID)
 
     kapt(Version.HILT.HILT_ANDROID_COMPILER)

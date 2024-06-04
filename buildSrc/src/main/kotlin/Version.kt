@@ -1,6 +1,7 @@
 object Version {
     object AndroidX {
         const val MATERIAL3 = "androidx.compose.material3:material3"
+        const val SPLASH = "androidx.core:core-splashscreen:1.2.0-alpha01"
     }
 
     object KTX {

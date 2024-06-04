@@ -17,21 +17,23 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.loococo.domain.model.CalendarNavigation
 import app.loococo.domain.model.CalendarType
 import app.loococo.domain.model.Todo
+import app.loococo.presentation.component.DoItBodyText
+import app.loococo.presentation.component.DoItIconButton
+import app.loococo.presentation.component.DoItLabelText
+import app.loococo.presentation.theme.Black
+import app.loococo.presentation.theme.Gray1
+import app.loococo.presentation.theme.Gray4
+import app.loococo.presentation.theme.White
 import app.loococo.presentation.utils.DoItIcons
 import java.text.DateFormatSymbols
 import java.time.DayOfWeek
@@ -54,9 +56,14 @@ fun CalendarScreen(
             .fillMaxWidth()
             .padding(15.dp)
     ) {
-        CalendarHeader(currentDay, calendarType, onCalendarNavigation, onCalendarTypeChange)
+        CalendarHeader(
+            currentDay,
+            calendarType,
+            onCalendarNavigation,
+            onCalendarTypeChange
+        )
         Spacer(modifier = Modifier.height(10.dp))
-        DaySection(
+        DayScreen(
             currentDay,
             calendarType,
             selectedDate,
@@ -82,57 +89,39 @@ private fun CalendarHeader(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(
-                modifier = Modifier.size(20.dp),
-                onClick = { onCalendarNavigation(CalendarNavigation.NavigateToPreviousPeriod) }) {
-                Icon(DoItIcons.ArrowLeft, contentDescription = "Previous period")
-            }
-            Text(
-                text = "${currentDay.year}-${currentDay.monthValue.toString().padStart(2, '0')}",
-                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
+            DoItIconButton(
+                size = 30.dp,
+                icon = DoItIcons.ArrowLeft,
+                description = "Previous period",
+                onClick = { onCalendarNavigation(CalendarNavigation.NavigateToPreviousPeriod) }
             )
-            IconButton(
-                modifier = Modifier.size(25.dp),
-                onClick = { onCalendarNavigation(CalendarNavigation.NavigateToNextPeriod) }) {
-                Icon(DoItIcons.ArrowRight, contentDescription = "Next period")
-            }
+            DoItBodyText(
+                text = "${currentDay.year}-${currentDay.monthValue.toString().padStart(2, '0')}",
+                fontWeight = FontWeight.Bold
+            )
+            DoItIconButton(
+                size = 30.dp,
+                icon = DoItIcons.ArrowRight,
+                description = "Next period",
+                onClick = { onCalendarNavigation(CalendarNavigation.NavigateToPreviousPeriod) }
+            )
         }
         Box(
             modifier = Modifier
                 .clickable { onCalendarTypeChange() }
-                .background(Color.LightGray, RoundedCornerShape(10.dp))
-                .padding(horizontal = 8.dp, vertical = 2.dp)
+                .background(Gray1, RoundedCornerShape(10.dp))
+                .padding(horizontal = 10.dp, vertical = 2.dp)
                 .wrapContentWidth(),
             contentAlignment = Alignment.Center
         ) {
-            Text(
+            DoItLabelText(
                 text = when (calendarType) {
                     CalendarType.DayOfMonth -> "월"
                     CalendarType.DayOfWeek -> "주"
-                },
-                style = MaterialTheme.typography.titleSmall
+                }
             )
         }
     }
-}
-
-@Composable
-private fun DaySection(
-    currentDay: LocalDate,
-    calendarType: CalendarType,
-    selectedDate: LocalDate,
-    todoListMap: Map<LocalDate, List<Todo>>,
-    onDateSelected: (LocalDate) -> Unit,
-    onDateRange: (LocalDate, LocalDate) -> Unit
-) {
-    DayScreen(
-        currentDay = currentDay,
-        calendarType = calendarType,
-        selectedDate = selectedDate,
-        todoListMap = todoListMap,
-        onDateSelected = onDateSelected,
-        onDateRange = onDateRange
-    )
 }
 
 @Composable
@@ -179,13 +168,10 @@ private fun DaysOfWeekHeader() {
         verticalAlignment = Alignment.CenterVertically
     ) {
         daysOfWeek.forEach { day ->
-            Text(
+            DoItLabelText(
                 text = day,
                 modifier = Modifier.weight(1f),
-                style = MaterialTheme.typography.titleSmall.copy(
-                    fontWeight = FontWeight.Bold
-                ),
-                textAlign = TextAlign.Center
+                fontWeight = FontWeight.Bold
             )
         }
     }
@@ -256,9 +242,11 @@ private fun DaysOfMonth(
             ) {
                 val day = totalDays[index]
                 if (index < daysInPreviousMonth || index >= daysInPreviousMonth + daysInMonth) {
-                    Spacer(modifier = Modifier
-                        .height(20.dp)
-                        .background(Color.Transparent))
+                    Spacer(
+                        modifier = Modifier
+                            .height(20.dp)
+                            .background(Color.Transparent)
+                    )
                 } else {
                     val date = LocalDate.of(currentDay.year, currentDay.monthValue, day)
                     DaysOfMonthItem(date, today, selectedDate, todoListMap, onDateSelected)
@@ -294,18 +282,15 @@ private fun DaysOfMonthItem(
             modifier = Modifier
                 .size(22.dp)
                 .background(
-                    color = if (isSelected) Color.DarkGray else if (isToday) Color.LightGray else Color.Transparent,
+                    color = if (isSelected) Gray4 else if (isToday) Gray1 else Color.Transparent,
                     shape = CircleShape
                 ),
             contentAlignment = Alignment.Center
         ) {
-            Text(
+            DoItLabelText(
                 text = "${date.dayOfMonth}",
-                style = MaterialTheme.typography.titleSmall.copy(
-                    fontWeight = if (isToday || isSelected) FontWeight.Bold else FontWeight.Normal
-                ),
-                color = if (isSelected) Color.White else Color.Black,
-                textAlign = TextAlign.Center
+                fontWeight = if (isToday || isSelected) FontWeight.Bold else FontWeight.Normal,
+                color = if (isSelected) White else Black,
             )
         }
         Spacer(modifier = Modifier.height(5.dp))
