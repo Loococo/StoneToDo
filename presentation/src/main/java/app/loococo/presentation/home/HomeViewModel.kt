@@ -133,4 +133,8 @@ class HomeViewModel @Inject constructor(
             todoUseCase.changeTodoStatus(id, status)
         }
     }
+
+    fun deleteTodo() {
+
+    }
 }

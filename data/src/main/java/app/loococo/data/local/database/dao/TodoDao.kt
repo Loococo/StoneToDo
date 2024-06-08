@@ -12,7 +12,7 @@ interface TodoDao {
     @Insert
     suspend fun insert(todoEntity: TodoEntity)
 
-    @Query("SELECT * FROM todo WHERE date = :date")
+    @Query("SELECT * FROM todo WHERE date = :date ORDER BY id DESC")
     fun getItemsByDate(date: String): Flow<List<TodoEntity>>
 
     @Query("SELECT * FROM todo WHERE date BETWEEN :startDate AND :endDate")

@@ -6,6 +6,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.MoreVert
 
 object DoItIcons {
     val ArrowLeft = Icons.AutoMirrored.Filled.KeyboardArrowLeft
@@ -13,4 +14,6 @@ object DoItIcons {
 
     val Check = Icons.Default.KeyboardArrowDown
     val Plus = Icons.Default.AddCircle
+
+    val More = Icons.Default.MoreVert
 }

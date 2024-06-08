@@ -32,6 +32,7 @@ import app.loococo.presentation.component.DoItIconButton
 import app.loococo.presentation.component.DoItLabelText
 import app.loococo.presentation.theme.Black
 import app.loococo.presentation.theme.Gray1
+import app.loococo.presentation.theme.Gray2
 import app.loococo.presentation.theme.Gray4
 import app.loococo.presentation.theme.White
 import app.loococo.presentation.utils.DoItIcons
@@ -103,7 +104,7 @@ private fun CalendarHeader(
                 size = 30.dp,
                 icon = DoItIcons.ArrowRight,
                 description = "Next period",
-                onClick = { onCalendarNavigation(CalendarNavigation.NavigateToPreviousPeriod) }
+                onClick = { onCalendarNavigation(CalendarNavigation.NavigateToNextPeriod) }
             )
         }
         Box(
@@ -188,7 +189,7 @@ private fun DaysOfWeek(
 ) {
     val startOfWeek = currentDay.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
     val weekDates = generateSequence(startOfWeek) { it.plusDays(1) }
-        .takeWhile { it.dayOfWeek != DayOfWeek.SUNDAY || it == startOfWeek }
+        .take(7)
         .toList()
 
     onDateRange.invoke(weekDates.first(), weekDates.last())
@@ -225,7 +226,7 @@ private fun DaysOfMonth(
     val totalDays = buildList {
         addAll((lastDayOfPreviousMonth - daysInPreviousMonth + 1..lastDayOfPreviousMonth).toList())
         addAll((1..daysInMonth).toList())
-        addAll((1..(7 - (daysInPreviousMonth + daysInMonth) % 7)).toList())
+        addAll((1..(42 - (daysInPreviousMonth + daysInMonth))).toList())
     }
 
     onDateRange.invoke(firstDayOfMonth, currentDay.withDayOfMonth(daysInMonth))
@@ -268,7 +269,9 @@ private fun DaysOfMonthItem(
 
     val isToday = date == today
     val isSelected = date == selectedDate
-    val hasTodos = todoListMap[date]?.isNotEmpty() == true
+    val todos = todoListMap[date] ?: emptyList()
+    val hasTodos = todos.isNotEmpty()
+    val allCheckTodo = todos.all { it.status }
 
     Column(
         modifier = Modifier.clickable(
@@ -282,7 +285,11 @@ private fun DaysOfMonthItem(
             modifier = Modifier
                 .size(22.dp)
                 .background(
-                    color = if (isSelected) Gray4 else if (isToday) Gray1 else Color.Transparent,
+                    color = when {
+                        isSelected -> Gray4
+                        isToday -> Gray1
+                        else -> Color.Transparent
+                    },
                     shape = CircleShape
                 ),
             contentAlignment = Alignment.Center
@@ -294,14 +301,14 @@ private fun DaysOfMonthItem(
             )
         }
         Spacer(modifier = Modifier.height(5.dp))
-        Box(
-            modifier = Modifier
-                .size(5.dp)
-                .background(
-                    if (hasTodos) Color.LightGray else Color.Transparent,
-                    shape = CircleShape
-                )
-        )
-        Spacer(modifier = Modifier.height(5.dp))
+        if (hasTodos) {
+            val todoColor = if (allCheckTodo) Gray4 else Gray2
+            Box(
+                modifier = Modifier
+                    .size(5.dp)
+                    .background(todoColor, shape = CircleShape)
+            )
+            Spacer(modifier = Modifier.height(5.dp))
+        }
     }
 }
