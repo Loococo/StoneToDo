@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.sp
 import app.loococo.presentation.theme.Black
 
 @Composable
-fun DoItLabelText(
+fun StoneToDoLabelText(
     text: String,
     modifier: Modifier = Modifier,
     fontWeight: FontWeight = FontWeight.Normal,
@@ -29,7 +29,7 @@ fun DoItLabelText(
 }
 
 @Composable
-fun DoItBodyText(
+fun StoneToDoBodyText(
     text: String,
     modifier: Modifier = Modifier,
     fontWeight: FontWeight = FontWeight.Normal,
@@ -46,7 +46,7 @@ fun DoItBodyText(
 }
 
 @Composable
-fun DoItTitleText(
+fun StoneToDoTitleText(
     text: String,
     modifier: Modifier = Modifier,
     fontWeight: FontWeight = FontWeight.Normal,

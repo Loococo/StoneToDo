@@ -1,4 +1,4 @@
-package app.loococo.todolist
+package app.loococo.stonetodo
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
-import app.loococo.todolist.navigation.DoItApp
+import app.loococo.stonetodo.navigation.StoneToDo
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            DoItApp()
+            StoneToDo()
         }
     }
 }

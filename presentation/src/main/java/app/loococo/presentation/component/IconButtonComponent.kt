@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.Dp
 import app.loococo.presentation.theme.Black
 
 @Composable
-fun DoItIconButton(
+fun StoneToDoIconButton(
     size: Dp,
     icon: ImageVector,
     description: String,
@@ -22,6 +22,11 @@ fun DoItIconButton(
         modifier = Modifier.size(size),
         onClick = onClick
     ) {
-        Icon(icon, contentDescription = description, tint = color)
+        Icon(
+            imageVector = icon,
+            contentDescription = description,
+            modifier = Modifier.size(size),
+            tint = color
+        )
     }
 }

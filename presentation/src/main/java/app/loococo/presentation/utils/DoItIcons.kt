@@ -4,11 +4,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.MoreVert
 
-object DoItIcons {
+object StoneToDoIcons {
     val ArrowLeft = Icons.AutoMirrored.Filled.KeyboardArrowLeft
     val ArrowRight = Icons.AutoMirrored.Filled.KeyboardArrowRight
 

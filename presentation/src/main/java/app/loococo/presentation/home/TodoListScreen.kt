@@ -27,28 +27,49 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import app.loococo.domain.model.Todo
 import app.loococo.presentation.R
-import app.loococo.presentation.component.DoItIconButton
-import app.loococo.presentation.component.DoItTitleText
+import app.loococo.presentation.component.StoneToDoIconButton
+import app.loococo.presentation.component.StoneToDoOptionPopup
+import app.loococo.presentation.component.StoneToDoTitleText
+import app.loococo.presentation.component.rememberShowOptionPopupState
 import app.loococo.presentation.theme.Black
 import app.loococo.presentation.theme.Gray2
-import app.loococo.presentation.utils.DoItIcons
+import app.loococo.presentation.utils.StoneToDoIcons
 
 @Composable
 fun TodoListScreen(
     list: List<Todo>,
     onCheckedChange: (Int, Boolean) -> Unit,
-    onShowRequest: (Todo) -> Unit
+    onChangeTodoDescription: (Todo?) -> Unit,
+    onDeleteTodo: (Todo?) -> Unit
 ) {
+    val showPopupState = rememberShowOptionPopupState()
+
     LazyColumn(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
     ) {
         items(list) { todo ->
             TodoItem(
-                todo,
-                onCheckedChange,
-                onShowRequest
+                item = todo,
+                onCheckedChange = onCheckedChange,
+                onShowPopup = showPopupState::showPopup
             )
         }
+        item {
+            Spacer(modifier = Modifier.height(90.dp))
+        }
+    }
+
+    if (showPopupState.showPopupState) {
+        StoneToDoOptionPopup(
+            onEditClick = {
+                onChangeTodoDescription(showPopupState.selectedTodoState)
+            },
+            onDeleteClick = {
+                onDeleteTodo(showPopupState.selectedTodoState)
+            },
+            onDismissRequest = showPopupState::dismissPopup
+        )
     }
 }
 
@@ -56,7 +77,7 @@ fun TodoListScreen(
 fun TodoItem(
     item: Todo,
     onCheckedChange: (Int, Boolean) -> Unit,
-    onShowRequest: (Todo) -> Unit
+    onShowPopup: (Todo) -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     Column(
@@ -85,24 +106,25 @@ fun TodoItem(
                         indication = null
                     )
             ) {
-                DoItTitleText(
+                StoneToDoTitleText(
                     text = item.description,
                     textDecoration = if (item.status) TextDecoration.LineThrough else TextDecoration.None,
                     color = if (item.status) Gray2 else Black
                 )
             }
-            DoItIconButton(
+            StoneToDoIconButton(
                 size = 20.dp,
-                icon = DoItIcons.More,
+                icon = StoneToDoIcons.More,
                 description = "더 보기",
                 onClick = {
-                    onShowRequest.invoke(item)
+                    onShowPopup(item)
                 }
             )
         }
         Spacer(modifier = Modifier.height(3.dp))
     }
 }
+
 
 @Composable
 fun CustomCheckbox(
@@ -124,8 +146,8 @@ fun CustomCheckbox(
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = if (checked) painterResource(id = R.drawable.doit_icon2) else painterResource(
-                id = R.drawable.doit_icon
+            painter = if (checked) painterResource(id = R.drawable.stone_todo_icon_w) else painterResource(
+                id = R.drawable.stone_todo_icon_b
             ),
             contentDescription = null,
             modifier = Modifier.size(20.dp)

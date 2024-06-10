@@ -13,7 +13,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ToDoList"
+rootProject.name = "StoneToDo"
 include(":app")
 include(":presentation")
 include(":data")

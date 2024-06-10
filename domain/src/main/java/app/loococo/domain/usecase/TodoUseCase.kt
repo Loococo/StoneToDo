@@ -21,7 +21,15 @@ class TodoUseCase @Inject constructor(
         return todoRepository.getTodoList(startDate, endDate)
     }
 
-    suspend fun changeTodoStatus(id:Int, status:Boolean) {
+    suspend fun changeTodoStatus(id: Int, status: Boolean) {
         todoRepository.changeTodoStatus(id, status)
+    }
+
+    suspend fun changeTodoDescription(id: Int, description: String) {
+        todoRepository.changeTodoDescription(id, description)
+    }
+
+    suspend fun deleteTodo(id: Int) {
+        todoRepository.deleteTodo(id)
     }
 }

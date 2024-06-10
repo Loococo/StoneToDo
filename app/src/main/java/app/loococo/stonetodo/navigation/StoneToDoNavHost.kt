@@ -1,4 +1,4 @@
-package app.loococo.todolist.navigation
+package app.loococo.stonetodo.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
@@ -7,7 +7,7 @@ import app.loococo.presentation.home.homeRoute
 import app.loococo.presentation.home.homeScreen
 
 @Composable
-fun DoItNavHost() {
+fun StoneToDoNavHost() {
     val navController = rememberNavController()
 
     NavHost(

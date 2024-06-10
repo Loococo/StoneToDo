@@ -1,4 +1,4 @@
-package app.loococo.todolist.di
+package app.loococo.stonetodo.di
 
 import android.content.Context
 import app.loococo.data.local.preferences.SharedPreferencesManager

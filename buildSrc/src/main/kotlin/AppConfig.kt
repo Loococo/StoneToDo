@@ -1,5 +1,5 @@
 object AppConfig {
-    const val applicationId = "app.loococo.todolist"
+    const val applicationId = "app.loococo.stonetodo"
     const val compileSdk = 34
     const val buildToolsVersion = "34.0.0"
     const val minSdk = 29

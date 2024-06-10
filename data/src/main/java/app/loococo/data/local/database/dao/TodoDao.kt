@@ -1,6 +1,7 @@
 package app.loococo.data.local.database.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
@@ -19,6 +20,12 @@ interface TodoDao {
     fun getItemsBetweenDates(startDate: String, endDate: String): Flow<List<TodoEntity>>
 
     @Query("UPDATE todo SET status = :status WHERE id = :id")
-    suspend fun changeTodoStatus(id:Int, status:Boolean)
+    suspend fun changeTodoStatus(id: Int, status: Boolean)
+
+    @Query("UPDATE todo SET description = :description WHERE id = :id")
+    suspend fun changeTodoDescription(id: Int, description: String)
+
+    @Query("DELETE FROM todo WHERE id = :id")
+    suspend fun deleteById(id: Int)
 
 }

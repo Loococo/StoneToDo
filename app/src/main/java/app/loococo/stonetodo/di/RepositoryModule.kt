@@ -1,4 +1,4 @@
-package app.loococo.todolist.di
+package app.loococo.stonetodo.di
 
 import app.loococo.data.local.database.dao.TodoDao
 import app.loococo.data.local.preferences.SharedPreferencesManager

@@ -1,4 +1,4 @@
-package app.loococo.todolist.app
+package app.loococo.stonetodo.app
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp

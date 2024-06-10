@@ -8,6 +8,7 @@ import app.loococo.domain.model.Todo
 import app.loococo.domain.usecase.PreferencesUseCase
 import app.loococo.domain.usecase.TodoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -39,8 +40,8 @@ class HomeViewModel @Inject constructor(
 
     private val _dateRangeFlow: MutableStateFlow<Pair<LocalDate, LocalDate>> =
         MutableStateFlow(Pair(LocalDate.now(), LocalDate.now()))
-    val dateRange: StateFlow<Pair<LocalDate, LocalDate>> = _dateRangeFlow
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     val todoList: StateFlow<List<Todo>> = _selectedDateFlow
         .flatMapLatest { selectedDate ->
             todoUseCase.getTodoList(selectedDate)
@@ -52,6 +53,7 @@ class HomeViewModel @Inject constructor(
             initialValue = emptyList()
         )
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     val todoListMap: StateFlow<Map<LocalDate, List<Todo>>> = _dateRangeFlow
         .flatMapLatest { dateRange ->
             todoUseCase.getTodoList(dateRange.first, dateRange.second)
@@ -134,7 +136,15 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun deleteTodo() {
+    fun changeTodoDescription(todo: Todo) {
 
+    }
+
+    fun deleteTodo(todo: Todo?) {
+        todo?.let {
+            viewModelScope.launch {
+                todoUseCase.deleteTodo(it.id)
+            }
+        }
     }
 }

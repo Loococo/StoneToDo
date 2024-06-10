@@ -1,4 +1,4 @@
-package app.loococo.todolist.di
+package app.loococo.stonetodo.di
 
 import app.loococo.domain.repository.PreferencesRepository
 import app.loococo.domain.repository.TodoRepository

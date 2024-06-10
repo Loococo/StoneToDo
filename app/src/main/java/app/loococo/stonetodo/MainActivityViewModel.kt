@@ -1,4 +1,4 @@
-package app.loococo.todolist
+package app.loococo.stonetodo
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

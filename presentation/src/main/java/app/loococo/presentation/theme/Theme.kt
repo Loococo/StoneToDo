@@ -4,7 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 
 @Composable
-fun DoItTheme(
+fun StoneToDoTheme(
     content: @Composable () -> Unit
 ) {
     MaterialTheme {

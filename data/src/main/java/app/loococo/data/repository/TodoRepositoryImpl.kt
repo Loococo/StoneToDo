@@ -34,4 +34,12 @@ class TodoRepositoryImpl @Inject constructor(
     override suspend fun changeTodoStatus(id: Int, status: Boolean) {
         todoDao.changeTodoStatus(id, status)
     }
+
+    override suspend fun changeTodoDescription(id: Int, description: String) {
+        todoDao.changeTodoDescription(id, description)
+    }
+
+    override suspend fun deleteTodo(id: Int) {
+        todoDao.deleteById(id)
+    }
 }

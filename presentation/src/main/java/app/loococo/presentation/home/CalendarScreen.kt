@@ -27,15 +27,15 @@ import androidx.compose.ui.unit.dp
 import app.loococo.domain.model.CalendarNavigation
 import app.loococo.domain.model.CalendarType
 import app.loococo.domain.model.Todo
-import app.loococo.presentation.component.DoItBodyText
-import app.loococo.presentation.component.DoItIconButton
-import app.loococo.presentation.component.DoItLabelText
+import app.loococo.presentation.component.StoneToDoBodyText
+import app.loococo.presentation.component.StoneToDoIconButton
+import app.loococo.presentation.component.StoneToDoLabelText
 import app.loococo.presentation.theme.Black
 import app.loococo.presentation.theme.Gray1
 import app.loococo.presentation.theme.Gray2
 import app.loococo.presentation.theme.Gray4
 import app.loococo.presentation.theme.White
-import app.loococo.presentation.utils.DoItIcons
+import app.loococo.presentation.utils.StoneToDoIcons
 import java.text.DateFormatSymbols
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -90,19 +90,19 @@ private fun CalendarHeader(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            DoItIconButton(
+            StoneToDoIconButton(
                 size = 30.dp,
-                icon = DoItIcons.ArrowLeft,
+                icon = StoneToDoIcons.ArrowLeft,
                 description = "Previous period",
                 onClick = { onCalendarNavigation(CalendarNavigation.NavigateToPreviousPeriod) }
             )
-            DoItBodyText(
+            StoneToDoBodyText(
                 text = "${currentDay.year}-${currentDay.monthValue.toString().padStart(2, '0')}",
                 fontWeight = FontWeight.Bold
             )
-            DoItIconButton(
+            StoneToDoIconButton(
                 size = 30.dp,
-                icon = DoItIcons.ArrowRight,
+                icon = StoneToDoIcons.ArrowRight,
                 description = "Next period",
                 onClick = { onCalendarNavigation(CalendarNavigation.NavigateToNextPeriod) }
             )
@@ -115,7 +115,7 @@ private fun CalendarHeader(
                 .wrapContentWidth(),
             contentAlignment = Alignment.Center
         ) {
-            DoItLabelText(
+            StoneToDoLabelText(
                 text = when (calendarType) {
                     CalendarType.DayOfMonth -> "월"
                     CalendarType.DayOfWeek -> "주"
@@ -169,7 +169,7 @@ private fun DaysOfWeekHeader() {
         verticalAlignment = Alignment.CenterVertically
     ) {
         daysOfWeek.forEach { day ->
-            DoItLabelText(
+            StoneToDoLabelText(
                 text = day,
                 modifier = Modifier.weight(1f),
                 fontWeight = FontWeight.Bold
@@ -283,7 +283,7 @@ private fun DaysOfMonthItem(
     ) {
         Box(
             modifier = Modifier
-                .size(22.dp)
+                .size(25.dp)
                 .background(
                     color = when {
                         isSelected -> Gray4
@@ -294,21 +294,19 @@ private fun DaysOfMonthItem(
                 ),
             contentAlignment = Alignment.Center
         ) {
-            DoItLabelText(
+            StoneToDoLabelText(
                 text = "${date.dayOfMonth}",
                 fontWeight = if (isToday || isSelected) FontWeight.Bold else FontWeight.Normal,
                 color = if (isSelected) White else Black,
             )
         }
         Spacer(modifier = Modifier.height(5.dp))
-        if (hasTodos) {
-            val todoColor = if (allCheckTodo) Gray4 else Gray2
-            Box(
-                modifier = Modifier
-                    .size(5.dp)
-                    .background(todoColor, shape = CircleShape)
-            )
-            Spacer(modifier = Modifier.height(5.dp))
-        }
+        val todoColor = if (hasTodos) if (allCheckTodo) Gray4 else Gray2 else Color.Transparent
+        Box(
+            modifier = Modifier
+                .size(5.dp)
+                .background(todoColor, shape = CircleShape)
+        )
+        Spacer(modifier = Modifier.height(5.dp))
     }
 }
