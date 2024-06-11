@@ -51,6 +51,7 @@ fun StoneToDoTitleText(
     modifier: Modifier = Modifier,
     fontWeight: FontWeight = FontWeight.Normal,
     textDecoration: TextDecoration = TextDecoration.None,
+    textAlign: TextAlign = TextAlign.Center,
     color: Color = Black
 ) {
     Text(
@@ -58,7 +59,7 @@ fun StoneToDoTitleText(
         modifier = modifier,
         fontSize = 18.sp,
         fontWeight = fontWeight,
-        textAlign = TextAlign.Center,
+        textAlign = textAlign,
         textDecoration = textDecoration,
         color = color
     )

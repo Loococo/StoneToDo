@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import app.loococo.domain.model.Todo
@@ -44,11 +45,13 @@ fun TodoListScreen(
 ) {
     val showPopupState = rememberShowOptionPopupState()
 
+    val sortedList = list.sortedBy { it.status }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        items(list) { todo ->
+        items(sortedList) { todo ->
             TodoItem(
                 item = todo,
                 onCheckedChange = onCheckedChange,
@@ -85,7 +88,7 @@ fun TodoItem(
         verticalArrangement = Arrangement.Center
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.Top
         ) {
             CustomCheckbox(
                 checked = item.status,
@@ -107,8 +110,9 @@ fun TodoItem(
                     )
             ) {
                 StoneToDoTitleText(
-                    text = item.description,
+                    text = item.description.trim(),
                     textDecoration = if (item.status) TextDecoration.LineThrough else TextDecoration.None,
+                    textAlign = TextAlign.Start,
                     color = if (item.status) Gray2 else Black
                 )
             }
@@ -135,6 +139,7 @@ fun CustomCheckbox(
     Box(
         modifier = Modifier
             .size(23.dp)
+            .padding(top = 5.dp)
             .clip(RoundedCornerShape(5.dp))
             .clickable(
                 onClick = {

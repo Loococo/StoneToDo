@@ -12,6 +12,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
@@ -28,30 +29,19 @@ class HomeViewModel @Inject constructor(
     private val todoUseCase: TodoUseCase
 ) : ViewModel() {
 
-    private val _currentDayFlow: MutableStateFlow<LocalDate> = MutableStateFlow(LocalDate.now())
-    val currentDay: StateFlow<LocalDate> = _currentDayFlow
+    private val currentLocalData by lazy {
+        LocalDate.now()
+    }
 
     private val _calendarTypeFlow: MutableStateFlow<CalendarType> =
         MutableStateFlow(preferencesUseCase.getCalendarType())
     val calendarType: StateFlow<CalendarType> = _calendarTypeFlow
 
-    private val _selectedDateFlow: MutableStateFlow<LocalDate> = MutableStateFlow(LocalDate.now())
+    private val _selectedDateFlow: MutableStateFlow<LocalDate> = MutableStateFlow(currentLocalData)
     val selectedDate: StateFlow<LocalDate> = _selectedDateFlow
 
     private val _dateRangeFlow: MutableStateFlow<Pair<LocalDate, LocalDate>> =
-        MutableStateFlow(Pair(LocalDate.now(), LocalDate.now()))
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val todoList: StateFlow<List<Todo>> = _selectedDateFlow
-        .flatMapLatest { selectedDate ->
-            todoUseCase.getTodoList(selectedDate)
-                .onStart { emit(emptyList()) }
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = emptyList()
-        )
+        MutableStateFlow(Pair(currentLocalData, currentLocalData))
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val todoListMap: StateFlow<Map<LocalDate, List<Todo>>> = _dateRangeFlow
@@ -68,47 +58,67 @@ class HomeViewModel @Inject constructor(
             initialValue = emptyMap()
         )
 
+    val todoList: StateFlow<List<Todo>> =
+        combine(_selectedDateFlow, todoListMap) { selectedDate, todoMap ->
+            todoMap[selectedDate] ?: emptyList()
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = emptyList()
+        )
+
     fun onCalendarNavigation(navigation: CalendarNavigation) {
-        val currentDayValue = _currentDayFlow.value
-        val updatedDay = when (_calendarTypeFlow.value) {
+        val currentDayValue = _selectedDateFlow.value
+        when (_calendarTypeFlow.value) {
             CalendarType.DayOfMonth -> {
-                val newDay = when (navigation) {
-                    CalendarNavigation.NavigateToNextPeriod -> currentDayValue.plusMonths(1)
-                    CalendarNavigation.NavigateToPreviousPeriod -> currentDayValue.minusMonths(1)
+                when (navigation) {
+                    CalendarNavigation.NavigateToNextPeriod -> {
+                        updateSelectedDate(currentDayValue.plusMonths(1).withDayOfMonth(1))
+                    }
+
+                    CalendarNavigation.NavigateToPreviousPeriod -> {
+                        updateSelectedDate(currentDayValue.minusMonths(1).withDayOfMonth(1))
+                    }
+
                     else -> return
                 }
-                updateSelectedDate(newDay.withDayOfMonth(1))
-                newDay
             }
 
             CalendarType.DayOfWeek -> {
-                val newDay = when (navigation) {
-                    CalendarNavigation.NavigateToNextPeriod -> currentDayValue.plusWeeks(1)
-                    CalendarNavigation.NavigateToPreviousPeriod -> currentDayValue.minusWeeks(1)
+                when (navigation) {
+                    CalendarNavigation.NavigateToNextPeriod -> {
+                        updateSelectedDate(
+                            currentDayValue.plusWeeks(1)
+                                .with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
+                        )
+                    }
+
+                    CalendarNavigation.NavigateToPreviousPeriod -> {
+                        updateSelectedDate(
+                            currentDayValue.minusWeeks(1).with(
+                                TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)
+                            )
+                        )
+                    }
+
                     else -> return
                 }
-                updateSelectedDate(newDay.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)))
-                newDay
             }
         }
-        _currentDayFlow.value = updatedDay
     }
 
     fun onCalendarTypeChange() {
+        val currentDayValue = _selectedDateFlow.value
         _calendarTypeFlow.value = when (_calendarTypeFlow.value) {
             CalendarType.DayOfMonth -> {
                 updateSelectedDate(
-                    _currentDayFlow.value.with(
-                        TemporalAdjusters.previousOrSame(
-                            DayOfWeek.SUNDAY
-                        )
-                    )
+                    currentDayValue
                 )
                 CalendarType.DayOfWeek
             }
 
             CalendarType.DayOfWeek -> {
-                updateSelectedDate(_currentDayFlow.value.withDayOfMonth(1))
+                updateSelectedDate(currentDayValue)
                 CalendarType.DayOfMonth
             }
         }
@@ -137,7 +147,9 @@ class HomeViewModel @Inject constructor(
     }
 
     fun changeTodoDescription(todo: Todo) {
-
+        viewModelScope.launch {
+            todoUseCase.changeTodoDescription(todo.id, todo.description)
+        }
     }
 
     fun deleteTodo(todo: Todo?) {

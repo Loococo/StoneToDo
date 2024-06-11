@@ -24,18 +24,27 @@ internal fun HomeRoute() {
     HomeScreen()
 }
 
+
 @Composable
 fun HomeScreen() {
 
     val viewModel: HomeViewModel = hiltViewModel()
 
-    val currentDayState by viewModel.currentDay.collectAsStateWithLifecycle()
     val calendarTypeState by viewModel.calendarType.collectAsStateWithLifecycle()
     val selectedDateState by viewModel.selectedDate.collectAsStateWithLifecycle()
     val todoListState by viewModel.todoList.collectAsStateWithLifecycle()
     val todoListMap by viewModel.todoListMap.collectAsStateWithLifecycle()
 
     val showPopupState = rememberShowAddPopupState()
+
+    if (showPopupState.showPopupState) {
+        StoneToDoAddPopup(
+            todo = showPopupState.selectedTodoState,
+            onAddTodo = viewModel::insert,
+            onEditTodo = viewModel::changeTodoDescription,
+            onDismissRequest = showPopupState::dismissPopup
+        )
+    }
 
     Box(
         modifier = Modifier
@@ -46,7 +55,6 @@ fun HomeScreen() {
                 .fillMaxSize()
         ) {
             CalendarScreen(
-                currentDay = currentDayState,
                 calendarType = calendarTypeState,
                 selectedDate = selectedDateState,
                 todoListMap = todoListMap,
@@ -65,7 +73,7 @@ fun HomeScreen() {
                     list = todoListState,
                     onCheckedChange = viewModel::changeTodoStatus,
                     onChangeTodoDescription = {
-                        showPopupState.showPopup()
+                        showPopupState.showPopup(it)
                     },
                     onDeleteTodo = viewModel::deleteTodo
                 )
@@ -78,18 +86,12 @@ fun HomeScreen() {
                 .padding(20.dp)
         ) {
             StoneToDoIconButton(
-                size = 70.dp,
+                size = 60.dp,
                 icon = StoneToDoIcons.Plus,
                 description = "add",
                 onClick = showPopupState::showPopup
             )
         }
 
-    }
-    if (showPopupState.showPopupState) {
-        StoneToDoAddPopup(
-            onAddTodo = viewModel::insert,
-            onDismissRequest = showPopupState::dismissPopup
-        )
     }
 }

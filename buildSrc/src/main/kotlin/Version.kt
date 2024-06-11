@@ -11,7 +11,7 @@ object Version {
     object COMPOSE {
         const val ACTIVITY = "androidx.activity:activity-compose:1.9.0-alpha03"
         const val BOM = "androidx.compose:compose-bom:2024.02.00"
-        const val UI = "androidx.compose.ui:ui"
+        const val UI = "androidx.compose.ui:ui:1.6.2"
         const val UI_GRAPHICS = "androidx.compose.ui:ui-graphics"
         const val UI_TOOLING_PREVIEW = "androidx.compose.ui:ui-tooling-preview"
         const val NAVIGATION = "androidx.navigation:navigation-compose:2.7.6"

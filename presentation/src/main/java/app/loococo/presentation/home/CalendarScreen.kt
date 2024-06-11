@@ -21,6 +21,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -43,7 +45,6 @@ import java.time.temporal.TemporalAdjusters
 
 @Composable
 fun CalendarScreen(
-    currentDay: LocalDate,
     calendarType: CalendarType,
     selectedDate: LocalDate,
     todoListMap: Map<LocalDate, List<Todo>>,
@@ -58,14 +59,13 @@ fun CalendarScreen(
             .padding(15.dp)
     ) {
         CalendarHeader(
-            currentDay,
+            selectedDate,
             calendarType,
             onCalendarNavigation,
             onCalendarTypeChange
         )
         Spacer(modifier = Modifier.height(10.dp))
         DayScreen(
-            currentDay,
             calendarType,
             selectedDate,
             todoListMap,
@@ -77,7 +77,7 @@ fun CalendarScreen(
 
 @Composable
 private fun CalendarHeader(
-    currentDay: LocalDate,
+    selectedDate: LocalDate,
     calendarType: CalendarType,
     onCalendarNavigation: (CalendarNavigation) -> Unit,
     onCalendarTypeChange: () -> Unit
@@ -97,7 +97,9 @@ private fun CalendarHeader(
                 onClick = { onCalendarNavigation(CalendarNavigation.NavigateToPreviousPeriod) }
             )
             StoneToDoBodyText(
-                text = "${currentDay.year}-${currentDay.monthValue.toString().padStart(2, '0')}",
+                text = "${selectedDate.year}-${
+                    selectedDate.monthValue.toString().padStart(2, '0')
+                }",
                 fontWeight = FontWeight.Bold
             )
             StoneToDoIconButton(
@@ -127,7 +129,6 @@ private fun CalendarHeader(
 
 @Composable
 private fun DayScreen(
-    currentDay: LocalDate,
     calendarType: CalendarType,
     selectedDate: LocalDate,
     todoListMap: Map<LocalDate, List<Todo>>,
@@ -141,7 +142,6 @@ private fun DayScreen(
 
     when (calendarType) {
         CalendarType.DayOfWeek -> DaysOfWeek(
-            currentDay,
             today,
             selectedDate,
             todoListMap,
@@ -150,7 +150,6 @@ private fun DayScreen(
         )
 
         CalendarType.DayOfMonth -> DaysOfMonth(
-            currentDay,
             today,
             selectedDate,
             todoListMap,
@@ -180,14 +179,13 @@ private fun DaysOfWeekHeader() {
 
 @Composable
 private fun DaysOfWeek(
-    currentDay: LocalDate,
     today: LocalDate,
     selectedDate: LocalDate,
     todoListMap: Map<LocalDate, List<Todo>>,
     onDateSelected: (LocalDate) -> Unit,
     onDateRange: (LocalDate, LocalDate) -> Unit
 ) {
-    val startOfWeek = currentDay.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
+    val startOfWeek = selectedDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
     val weekDates = generateSequence(startOfWeek) { it.plusDays(1) }
         .take(7)
         .toList()
@@ -212,15 +210,14 @@ private fun DaysOfWeek(
 
 @Composable
 private fun DaysOfMonth(
-    currentDay: LocalDate,
     today: LocalDate,
     selectedDate: LocalDate,
     todoListMap: Map<LocalDate, List<Todo>>,
     onDateSelected: (LocalDate) -> Unit,
     onDateRange: (LocalDate, LocalDate) -> Unit
 ) {
-    val firstDayOfMonth = currentDay.withDayOfMonth(1)
-    val daysInMonth = currentDay.lengthOfMonth()
+    val firstDayOfMonth = selectedDate.withDayOfMonth(1)
+    val daysInMonth = selectedDate.lengthOfMonth()
     val daysInPreviousMonth = firstDayOfMonth.dayOfWeek.value % 7
     val lastDayOfPreviousMonth = firstDayOfMonth.minusDays(1).dayOfMonth
     val totalDays = buildList {
@@ -229,7 +226,7 @@ private fun DaysOfMonth(
         addAll((1..(42 - (daysInPreviousMonth + daysInMonth))).toList())
     }
 
-    onDateRange.invoke(firstDayOfMonth, currentDay.withDayOfMonth(daysInMonth))
+    onDateRange.invoke(firstDayOfMonth, selectedDate.withDayOfMonth(daysInMonth))
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(7),
@@ -249,7 +246,7 @@ private fun DaysOfMonth(
                             .background(Color.Transparent)
                     )
                 } else {
-                    val date = LocalDate.of(currentDay.year, currentDay.monthValue, day)
+                    val date = LocalDate.of(selectedDate.year, selectedDate.monthValue, day)
                     DaysOfMonthItem(date, today, selectedDate, todoListMap, onDateSelected)
                 }
             }
@@ -301,11 +298,19 @@ private fun DaysOfMonthItem(
             )
         }
         Spacer(modifier = Modifier.height(5.dp))
-        val todoColor = if (hasTodos) if (allCheckTodo) Gray4 else Gray2 else Color.Transparent
         Box(
             modifier = Modifier
                 .size(5.dp)
-                .background(todoColor, shape = CircleShape)
+                .clip(CircleShape)
+                .drawBehind {
+                    drawCircle(
+                        if (hasTodos) {
+                            if (allCheckTodo) Gray4 else Gray2
+                        } else {
+                            Color.Transparent
+                        }
+                    )
+                }
         )
         Spacer(modifier = Modifier.height(5.dp))
     }
