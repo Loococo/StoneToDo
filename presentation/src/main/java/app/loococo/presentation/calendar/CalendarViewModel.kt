@@ -1,4 +1,4 @@
-package app.loococo.presentation.home
+package app.loococo.presentation.calendar
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,7 +24,7 @@ import java.time.temporal.TemporalAdjusters
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(
+class CalendarViewModel @Inject constructor(
     private val preferencesUseCase: PreferencesUseCase,
     private val todoUseCase: TodoUseCase
 ) : ViewModel() {

@@ -1,4 +1,4 @@
-package app.loococo.presentation.home
+package app.loococo.presentation.calendar
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable

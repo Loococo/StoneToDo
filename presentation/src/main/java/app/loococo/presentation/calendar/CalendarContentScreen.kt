@@ -1,4 +1,4 @@
-package app.loococo.presentation.home
+package app.loococo.presentation.calendar
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -44,7 +44,7 @@ import java.time.LocalDate
 import java.time.temporal.TemporalAdjusters
 
 @Composable
-fun CalendarScreen(
+fun CalendarContentScreen(
     calendarType: CalendarType,
     selectedDate: LocalDate,
     todoListMap: Map<LocalDate, List<Todo>>,
