@@ -1,4 +1,4 @@
-package app.loococo.presentation.home
+package app.loococo.presentation.calendar
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import app.loococo.domain.model.CalendarNavigation
 import app.loococo.domain.model.CalendarType
 import app.loococo.domain.model.Todo
+import app.loococo.presentation.component.HeightSpacer
 import app.loococo.presentation.component.StoneToDoBodyText
 import app.loococo.presentation.component.StoneToDoIconButton
 import app.loococo.presentation.component.StoneToDoLabelText
@@ -44,7 +45,7 @@ import java.time.LocalDate
 import java.time.temporal.TemporalAdjusters
 
 @Composable
-fun CalendarScreen(
+fun CalendarContentScreen(
     calendarType: CalendarType,
     selectedDate: LocalDate,
     todoListMap: Map<LocalDate, List<Todo>>,
@@ -64,7 +65,7 @@ fun CalendarScreen(
             onCalendarNavigation,
             onCalendarTypeChange
         )
-        Spacer(modifier = Modifier.height(10.dp))
+        HeightSpacer(height = 10)
         DayScreen(
             calendarType,
             selectedDate,
@@ -138,7 +139,7 @@ private fun DayScreen(
     val today = LocalDate.now()
 
     DaysOfWeekHeader()
-    Spacer(modifier = Modifier.height(3.dp))
+    HeightSpacer(height = 3)
 
     when (calendarType) {
         CalendarType.DayOfWeek -> DaysOfWeek(
@@ -240,11 +241,7 @@ private fun DaysOfMonth(
             ) {
                 val day = totalDays[index]
                 if (index < daysInPreviousMonth || index >= daysInPreviousMonth + daysInMonth) {
-                    Spacer(
-                        modifier = Modifier
-                            .height(20.dp)
-                            .background(Color.Transparent)
-                    )
+                    HeightSpacer(height = 10)
                 } else {
                     val date = LocalDate.of(selectedDate.year, selectedDate.monthValue, day)
                     DaysOfMonthItem(date, today, selectedDate, todoListMap, onDateSelected)
@@ -297,7 +294,7 @@ private fun DaysOfMonthItem(
                 color = if (isSelected) White else Black,
             )
         }
-        Spacer(modifier = Modifier.height(5.dp))
+        HeightSpacer(height = 5)
         Box(
             modifier = Modifier
                 .size(5.dp)
@@ -312,6 +309,6 @@ private fun DaysOfMonthItem(
                     )
                 }
         )
-        Spacer(modifier = Modifier.height(5.dp))
+        HeightSpacer(height = 5)
     }
 }

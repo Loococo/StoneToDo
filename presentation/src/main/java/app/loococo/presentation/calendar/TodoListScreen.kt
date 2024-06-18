@@ -1,4 +1,4 @@
-package app.loococo.presentation.home
+package app.loococo.presentation.calendar
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -28,9 +28,11 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import app.loococo.domain.model.Todo
 import app.loococo.presentation.R
+import app.loococo.presentation.component.HeightSpacer
 import app.loococo.presentation.component.StoneToDoIconButton
 import app.loococo.presentation.component.StoneToDoOptionPopup
 import app.loococo.presentation.component.StoneToDoTitleText
+import app.loococo.presentation.component.WidthSpacer
 import app.loococo.presentation.component.rememberShowOptionPopupState
 import app.loococo.presentation.theme.Black
 import app.loococo.presentation.theme.Gray2
@@ -45,13 +47,8 @@ fun TodoListScreen(
 ) {
     val showPopupState = rememberShowOptionPopupState()
 
-    val sortedList = list.sortedBy { it.status }
-
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        items(sortedList) { todo ->
+    LazyColumn {
+        items(list) { todo ->
             TodoItem(
                 item = todo,
                 onCheckedChange = onCheckedChange,
@@ -59,7 +56,7 @@ fun TodoListScreen(
             )
         }
         item {
-            Spacer(modifier = Modifier.height(90.dp))
+            HeightSpacer(height = 90)
         }
     }
 
@@ -84,7 +81,6 @@ fun TodoItem(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     Column(
-        modifier = Modifier.padding(horizontal = 20.dp, vertical = 5.dp),
         verticalArrangement = Arrangement.Center
     ) {
         Row(
@@ -97,7 +93,7 @@ fun TodoItem(
                 },
                 interactionSource = interactionSource
             )
-            Spacer(modifier = Modifier.width(7.dp))
+            WidthSpacer(width = 7)
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -125,7 +121,7 @@ fun TodoItem(
                 }
             )
         }
-        Spacer(modifier = Modifier.height(3.dp))
+        HeightSpacer(height = 10)
     }
 }
 

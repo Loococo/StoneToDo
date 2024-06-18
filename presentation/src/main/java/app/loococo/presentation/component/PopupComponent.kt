@@ -79,7 +79,7 @@ fun StoneToDoAddPopup(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 StoneToDoLabelText(text = "할 일 추가하기")
-                Spacer(modifier = Modifier.height(10.dp))
+                HeightSpacer(height = 10)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -182,12 +182,7 @@ fun StoneToDoOptionPopup(
                         .padding(50.dp, 20.dp)
                 )
             }
-            Spacer(
-                modifier = Modifier
-                    .width(120.dp)
-                    .height(1.dp)
-                    .background(Gray2)
-            )
+            WidthHeightSpacer(width = 120, height = 1, backgroundColor = Gray2)
             Box(modifier = Modifier.clickable {
                 onDismissRequest.invoke()
                 onDeleteClick.invoke()
