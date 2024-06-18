@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.loococo.presentation.component.HeightSpacer
 import app.loococo.presentation.component.StoneToDoAddPopup
 import app.loococo.presentation.component.StoneToDoIconButton
 import app.loococo.presentation.component.rememberShowAddPopupState
@@ -59,11 +60,11 @@ fun CalendarScreen() {
                 onDateSelected = viewModel::updateSelectedDate,
                 onDateRange = viewModel::dateRange
             )
-            Spacer(modifier = Modifier.height(5.dp))
+            HeightSpacer(height = 5)
             Box(
                 modifier = Modifier
-                    .animateContentSize()
                     .weight(1f)
+                    .padding(horizontal = 20.dp)
             ) {
                 TodoListScreen(
                     list = todoListState,

@@ -61,11 +61,15 @@ class CalendarViewModel @Inject constructor(
     val todoList: StateFlow<List<Todo>> =
         combine(_selectedDateFlow, todoListMap) { selectedDate, todoMap ->
             todoMap[selectedDate] ?: emptyList()
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = emptyList()
-        )
+        }
+            .map { todos ->
+                todos.sortedBy { it.status }
+            }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = emptyList()
+            )
 
     fun onCalendarNavigation(navigation: CalendarNavigation) {
         val currentDayValue = _selectedDateFlow.value

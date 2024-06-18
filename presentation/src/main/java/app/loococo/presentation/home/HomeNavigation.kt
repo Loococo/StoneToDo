@@ -3,19 +3,13 @@ package app.loococo.presentation.home
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
-import androidx.navigation.compose.composable
+import app.loococo.presentation.component.animatedComposable
 
 
 const val homeRoute = "home_route"
 
 fun NavGraphBuilder.homeScreen() {
-    composable(
-        route = homeRoute,
-        enterTransition = { null },
-        exitTransition = { null },
-        popEnterTransition = { null },
-        popExitTransition = { null }
-    ) {
+    animatedComposable(route = homeRoute) {
         HomeRoute()
     }
 }

@@ -11,17 +11,12 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import app.loococo.presentation.component.animatedComposable
 
 const val calendarRoute = "calendar_route"
 
 fun NavGraphBuilder.calendarScreen() {
-    composable(
-        route = calendarRoute,
-        enterTransition = { null },
-        exitTransition = { null },
-        popEnterTransition = { null },
-        popExitTransition = { null }
-    ) {
+    animatedComposable(route = calendarRoute) {
         CalendarRoute()
     }
 }
