@@ -28,6 +28,7 @@ object Version {
         const val HILT_ANDROID = "com.google.dagger:hilt-android:2.49"
         const val HILT_ANDROID_COMPILER = "com.google.dagger:hilt-android-compiler:2.49"
         const val HILT_VIEWMODEL = "androidx.hilt:hilt-navigation-compose:1.2.0"
+        const val DAGGER_HILT_JAVAX = "javax.inject:javax.inject:1"
     }
 
     object RETROFIT {
@@ -44,5 +45,9 @@ object Version {
         const val ROOM_COMPILER = "androidx.room:room-compiler:2.6.1"
         const val ROOM_KTX = "androidx.room:room-ktx:2.6.1"
         const val ROOM_KTX_COMPILER = "android.arch.persistence.room:compiler:1.1.1"
+    }
+
+    object KOTLIN {
+        const val KOTLINX = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1"
     }
 }
